@@ -106,22 +106,12 @@ describe('GatherRunner', function() {
     });
   });
 
-  it('creates settings if needed', () => {
-    const url = 'https://example.com';
-    const driver = fakeDriver;
-    const config = new Config({});
-    const options = {url, driver, config};
-
-    return GatherRunner.run([], options).then(_ => {
-      assert.equal(typeof options.settings, 'object');
-    });
-  });
-
   it('collects user agent as an artifact', () => {
     const url = 'https://example.com';
     const driver = fakeDriver;
     const config = new Config({});
-    const options = {url, driver, config};
+    const settings = {};
+    const options = {url, driver, config, settings};
 
     return GatherRunner.run([], options).then(results => {
       assert.equal(results.UserAgent, 'Fake user agent', 'did not find expected user agent string');
@@ -501,21 +491,6 @@ describe('GatherRunner', function() {
     });
   });
 
-  it('rejects when not given a URL', () => {
-    return GatherRunner.run({}, {}).then(_ => assert.ok(false), _ => assert.ok(true));
-  });
-
-  it('rejects when given a URL of zero length', () => {
-    return GatherRunner.run({}, {url: ''}).then(_ => assert.ok(false), _ => assert.ok(true));
-  });
-
-  it('rejects when not given a config', () => {
-    return GatherRunner.run({}, {url: 'http://example.com'})
-        .then(_ => assert.ok(false), err => {
-          assert.ok(/config/i.test(err));
-        });
-  });
-
   it('does as many passes as are required', () => {
     const t1 = new TestGatherer();
     const t2 = new TestGatherer();
@@ -764,18 +739,18 @@ describe('GatherRunner', function() {
     });
 
     it('produces a LighthouseRunWarnings artifact from array of warnings', () => {
-      const LighthouseRunWarnings = [
+      const LighthouseRunWarnings = [[
         'warning0',
         'warning1',
         'warning2',
-      ];
+      ]];
 
       const gathererResults = {
         LighthouseRunWarnings,
       };
 
       return GatherRunner.collectArtifacts(gathererResults).then(artifacts => {
-        assert.deepStrictEqual(artifacts.LighthouseRunWarnings, LighthouseRunWarnings);
+        assert.deepStrictEqual(artifacts.LighthouseRunWarnings, LighthouseRunWarnings[0]);
       });
     });
 
@@ -953,17 +928,17 @@ describe('GatherRunner', function() {
 
   it('issues a lighthouseRunWarnings if running an old version of Headless', () => {
     const gathererResults = {
-      LighthouseRunWarnings: [],
+      LighthouseRunWarnings: [[]],
     };
 
     const userAgent = 'Mozilla/5.0 AppleWebKit/537.36 HeadlessChrome/63.0.3239.0 Safari/537.36';
     GatherRunner.warnOnHeadless(userAgent, gathererResults);
-    assert.strictEqual(gathererResults.LighthouseRunWarnings.length, 0);
+    assert.strictEqual(gathererResults.LighthouseRunWarnings[0].length, 0);
 
     const oldUserAgent = 'Mozilla/5.0 AppleWebKit/537.36 HeadlessChrome/62.0.3239.0 Safari/537.36';
     GatherRunner.warnOnHeadless(oldUserAgent, gathererResults);
-    assert.strictEqual(gathererResults.LighthouseRunWarnings.length, 1);
-    const warning = gathererResults.LighthouseRunWarnings[0];
+    assert.strictEqual(gathererResults.LighthouseRunWarnings[0].length, 1);
+    const warning = gathererResults.LighthouseRunWarnings[0][0];
     assert.ok(/Headless Chrome/.test(warning));
   });
 });

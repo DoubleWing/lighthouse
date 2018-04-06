@@ -679,6 +679,7 @@ class Driver {
 
     if (waitForLoad) {
       const passConfig = passContext.passConfig || {};
+      passConfig;
       let {pauseAfterLoadMs, networkQuietThresholdMs, cpuQuietThresholdMs} = passConfig;
       let maxWaitMs = passContext.settings && passContext.settings.maxWaitForLoad;
 
@@ -876,7 +877,7 @@ class Driver {
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {Promise<LH.Trace>}
    */
   endTrace() {
     return new Promise((resolve, reject) => {
@@ -893,6 +894,7 @@ class Driver {
 
   /**
    * @param {LH.Crdp.Tracing.TracingCompleteEvent} traceCompleteEvent
+   * @return {Promise<LH.Trace>}
    */
   _readTraceFromStream(traceCompleteEvent) {
     return new Promise((resolve, reject) => {
@@ -955,7 +957,7 @@ class Driver {
   }
 
   /**
-   * @param {LH.ConfigSettings} settings
+   * @param {LH.Config.Settings} settings
    * @return {Promise<void>}
    */
   async beginEmulation(settings) {
@@ -967,7 +969,7 @@ class Driver {
   }
 
   /**
-   * @param {LH.ConfigSettings} settings
+   * @param {LH.Config.Settings} settings
    * @param {{useThrottling?: boolean}} passConfig
    * @return {Promise<void>}
    */
@@ -998,7 +1000,7 @@ class Driver {
 
   /**
    * Enable internet connection, using emulated mobile settings if applicable.
-   * @param {{settings: LH.ConfigSettings, passConfig: LH.ConfigPass}} options
+   * @param {{settings: LH.Config.Settings, passConfig: LH.Config.Pass}} options
    * @return {Promise<void>}
    */
   async goOnline(options) {
@@ -1019,17 +1021,15 @@ class Driver {
   }
 
   /**
-   * @param {LH.Crdp.Network.Headers} headers key/value pairs of HTTP Headers.
+   * @param {LH.Crdp.Network.Headers=} headers key/value pairs of HTTP Headers.
    * @return {Promise<void>}
    */
-  setExtraHTTPHeaders(headers) {
-    if (headers) {
-      return this.sendCommand('Network.setExtraHTTPHeaders', {
-        headers,
-      });
+  async setExtraHTTPHeaders(headers) {
+    if (!headers) {
+      return;
     }
 
-    return Promise.resolve();
+    return this.sendCommand('Network.setExtraHTTPHeaders', {headers});
   }
 
   /**

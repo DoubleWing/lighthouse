@@ -23,7 +23,7 @@ declare global {
     export interface LoadData {
       networkRecords: Array<WebInspector.NetworkRequest>;
       devtoolsLog: Array<Protocol.RawEventMessage>;
-      trace: Trace;
+      trace?: Trace;
     }
 
     namespace Simulation {

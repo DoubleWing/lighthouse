@@ -679,7 +679,6 @@ class Driver {
 
     if (waitForLoad) {
       const passConfig = passContext.passConfig || {};
-      passConfig;
       let {pauseAfterLoadMs, networkQuietThresholdMs, cpuQuietThresholdMs} = passConfig;
       let maxWaitMs = passContext.settings && passContext.settings.maxWaitForLoad;
 

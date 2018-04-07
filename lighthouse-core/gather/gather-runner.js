@@ -380,9 +380,6 @@ class GatherRunner {
         // Take last defined pass result as artifact.
         const definedResults = phaseResults.filter(element => element !== undefined);
         const artifact = definedResults[definedResults.length - 1];
-        if (artifact === undefined) {
-          throw new Error(`${gathererName} failed to provide an artifact.`);
-        }
         artifacts[gathererName] = artifact;
       } catch (err) {
         // To reach this point, all errors are non-fatal, so return err to
@@ -390,6 +387,10 @@ class GatherRunner {
         artifacts[gathererName] = err;
         // Track page load errors separately, so we can fail loudly if needed.
         if (LHError.isPageLoadError(err)) pageLoadFailures.push(err);
+      }
+
+      if (artifacts[gathererName] === undefined) {
+        throw new Error(`${gathererName} failed to provide an artifact.`);
       }
     }
 

@@ -664,7 +664,7 @@ class Driver {
    */
   async gotoURL(url, options = {}) {
     const waitForLoad = options.waitForLoad || false;
-    const passContext = options.passContext || {};
+    const passContext = /** @type {Partial<LH.Gatherer.PassContext>} */ (options.passContext || {});
     const disableJS = passContext.disableJavaScript || false;
 
     await this._beginNetworkStatusMonitoring(url);
@@ -678,7 +678,7 @@ class Driver {
     this.sendCommand('Page.navigate', {url});
 
     if (waitForLoad) {
-      const passConfig = passContext.passConfig || {};
+      const passConfig = /** @type {Partial<LH.Config.Pass>} */ (passContext.passConfig || {});
       let {pauseAfterLoadMs, networkQuietThresholdMs, cpuQuietThresholdMs} = passConfig;
       let maxWaitMs = passContext.settings && passContext.settings.maxWaitForLoad;
 
